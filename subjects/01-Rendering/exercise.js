@@ -30,20 +30,20 @@ const DATA = {
 };
 
 class Menu extends React.Component {
-  constructor(props) {
-    super(props);
+  state = {
+    foodType: "mexican",
+    sortAscending: true
+  };
+  updateFoodType = event => {
+    this.setState({ foodType: event.target.value });
+  };
+  toggleSortOrder = () => {
+    this.setState({ sortAscending: !this.state.sortAscending });
 
-    this.state = {
-      foodType: "mexican",
-      sortAscending: true
-    };
-    this.updateFoodType = event => {
-      this.setState({ foodType: event.target.value });
-    };
-    this.toggleSortOrder = () => {
-      this.setState({ sortAscending: !this.state.sortAscending });
-    };
-  }
+    if (this.props.onToggle) {
+      this.props.onToggle();
+    }
+  };
   render() {
     const menu = DATA.items
       .filter(dish => dish.type === this.state.foodType)
@@ -69,6 +69,23 @@ class Menu extends React.Component {
   }
 }
 
-ReactDOM.render(<Menu />, document.getElementById("app"));
+class App extends React.Component {
+  state = { numToggles: 0 };
+
+  handleToggle = () => {
+    this.setState({ numToggles: this.state.numToggles + 1 });
+  };
+
+  render() {
+    return (
+      <div>
+        <p>Number of toggles: {this.state.numToggles}</p>
+        <Menu onToggle={this.handleToggle} />
+      </div>
+    );
+  }
+}
+
+ReactDOM.render(<App />, document.getElementById("app"));
 
 require("./tests").run();
