@@ -29,41 +29,45 @@ const DATA = {
   ]
 };
 
-let foodType = "mexican";
+class Menu extends React.Component {
+  constructor(props) {
+    super(props);
 
-function updateFoodType(event) {
-  foodType = event.target.value;
-  ReactDOM.render(<Menu />, document.getElementById("app"));
+    this.state = {
+      foodType: "mexican",
+      sortAscending: true
+    };
+    this.updateFoodType = event => {
+      this.setState({ foodType: event.target.value });
+    };
+    this.toggleSortOrder = () => {
+      this.setState({ sortAscending: !this.state.sortAscending });
+    };
+  }
+  render() {
+    const menu = DATA.items
+      .filter(dish => dish.type === this.state.foodType)
+      .sort(sortBy(this.state.sortAscending ? "name" : "-name"))
+      .map(dish => <li key={dish.id}>{dish.name}</li>);
+
+    return (
+      <div>
+        <h1>{DATA.title}</h1>
+        <p>
+          Type:{" "}
+          <select onChange={this.updateFoodType}>
+            <option value="mexican">Mexican</option>
+            <option value="english">English</option>
+          </select>
+        </p>
+        <ul>{menu}</ul>
+        <button onClick={this.toggleSortOrder}>
+          Toggle Sort Order
+        </button>
+      </div>
+    );
+  }
 }
-
-let sortAscending = true;
-
-function toggleSortOrder() {
-  sortAscending = !sortAscending;
-  ReactDOM.render(<Menu />, document.getElementById("app"));
-}
-
-const Menu = function() {
-  const menu = DATA.items
-    .filter(dish => dish.type === foodType)
-    .sort(sortBy(sortAscending ? "name" : "-name"))
-    .map(dish => <li key={dish.id}>{dish.name}</li>);
-
-  return (
-    <div>
-      <h1>{DATA.title}</h1>
-      <p>
-        Type:{" "}
-        <select onChange={updateFoodType}>
-          <option value="mexican">Mexican</option>
-          <option value="english">English</option>
-        </select>
-      </p>
-      <ul>{menu}</ul>
-      <button onClick={toggleSortOrder}>Toggle Sort Order</button>
-    </div>
-  );
-};
 
 ReactDOM.render(<Menu />, document.getElementById("app"));
 
