@@ -29,9 +29,41 @@ const DATA = {
   ]
 };
 
-function Menu() {
-  return <div>Open the console, you have failing tests.</div>;
+let foodType = "mexican";
+
+function updateFoodType(event) {
+  foodType = event.target.value;
+  ReactDOM.render(<Menu />, document.getElementById("app"));
 }
+
+let sortAscending = true;
+
+function toggleSortOrder() {
+  sortAscending = !sortAscending;
+  ReactDOM.render(<Menu />, document.getElementById("app"));
+}
+
+const Menu = function() {
+  const menu = DATA.items
+    .filter(dish => dish.type === foodType)
+    .sort(sortBy(sortAscending ? "name" : "-name"))
+    .map(dish => <li key={dish.id}>{dish.name}</li>);
+
+  return (
+    <div>
+      <h1>{DATA.title}</h1>
+      <p>
+        Type:{" "}
+        <select onChange={updateFoodType}>
+          <option value="mexican">Mexican</option>
+          <option value="english">English</option>
+        </select>
+      </p>
+      <ul>{menu}</ul>
+      <button onClick={toggleSortOrder}>Toggle Sort Order</button>
+    </div>
+  );
+};
 
 ReactDOM.render(<Menu />, document.getElementById("app"));
 

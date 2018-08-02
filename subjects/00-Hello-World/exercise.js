@@ -7,8 +7,25 @@
 import React from "react";
 import ReactDOM from "react-dom";
 
-function App() {
-  return <div>Hello AutoZone!</div>;
+const contacts = [
+  { id: 1, name: "Michael Jackson" },
+  { id: 2, name: "Elvis Presley" },
+  { id: 3, name: "Taylor Swift" }
+];
+
+function ContactList() {
+  return (
+    <div>
+      <h1>Contacts</h1>
+      {contacts.map(contact => (
+        <div key={contact.id} onClick={() => console.log(contact.name)}>
+          {contact.name.toUpperCase()}
+        </div>
+      ))}
+    </div>
+  );
 }
 
-ReactDOM.render(<App />, document.getElementById("app"));
+const element = <ContactList />;
+
+ReactDOM.render(element, document.getElementById("app"));
