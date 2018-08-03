@@ -13,15 +13,22 @@ import "bootstrap-webpack";
 class Modal extends React.Component {
   static propTypes = {
     title: PropTypes.string.isRequired,
-    children: PropTypes.node
+    children: PropTypes.node,
+    isOpen: PropTypes.bool.isRequired
   };
 
-  open() {
-    $(this.node).modal("show");
+  doImperativeWork() {
+    this.props.isOpen === true
+      ? $(this.node).modal("show")
+      : $(this.node).modal("hide");
   }
 
-  close() {
-    $(this.node).modal("hide");
+  componentDidMount() {
+    this.doImperativeWork();
+  }
+
+  componentDidUpdate() {
+    this.doImperativeWork();
   }
 
   render() {
@@ -41,12 +48,14 @@ class Modal extends React.Component {
 }
 
 class App extends React.Component {
+  state = { isOpen: false };
+
   openModal = () => {
-    this.modal.open();
+    this.setState({ isOpen: true });
   };
 
   closeModal = () => {
-    this.modal.close();
+    this.setState({ isOpen: false });
   };
 
   render() {
@@ -61,6 +70,7 @@ class App extends React.Component {
         <Modal
           title="Declarative is better"
           ref={modal => (this.modal = modal)}
+          isOpen={this.state.isOpen}
         >
           <p>Calling methods on instances is a FLOW not a STOCK!</p>
           <p>
