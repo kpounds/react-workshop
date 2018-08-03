@@ -20,7 +20,9 @@ import PropTypes from "prop-types";
 import getAddressFromCoords from "./utils/getAddressFromCoords";
 import LoadingDots from "./LoadingDots";
 
-class App extends React.Component {
+// getAddressFromCoords(lat, lng).then(address => ...)
+
+class GeoPosition extends React.Component {
   state = {
     coords: {
       latitude: null,
@@ -48,21 +50,67 @@ class App extends React.Component {
   componentWillUnmount() {
     navigator.geolocation.clearWatch(this.geoId);
   }
+  render() {
+    return this.props.children(
+      this.state.coords.latitude,
+      this.state.coords.longitude
+    );
+  }
+}
 
+class GeoAddress extends React.Component {
+  state = { address: null };
+
+  fetchAddress() {
+    const { latitude, longitude } = this.props;
+
+    if (latitude && longitude) {
+      getAddressFromCoords(latitude, longitude).then(address => {
+        this.setState({ address });
+      });
+    }
+  }
+
+  componentDidMount() {
+    this.fetchAddress();
+  }
+  componentDidUpdate(prevProps) {
+    if (
+      this.props.latitude !== prevProps.latitude ||
+      this.props.longitude !== prevProps.longitude
+    ) {
+      this.fetchAddress();
+    }
+  }
+
+  render() {
+    return this.props.children(this.state.address);
+  }
+}
+
+class App extends React.Component {
+  renderAddress = address => {
+    return <dd>{address}</dd>;
+  };
+  renderPosition = (lat, lng) => {
+    return (
+      <dl>
+        <dt>Latitude</dt>
+        <dd>{lat || <LoadingDots />}</dd>
+        <dt>Longitude</dt>
+        <dd>{lng || <LoadingDots />}</dd>
+        <dt>Address</dt>
+        <GeoAddress latitude={lat} longitude={lng}>
+          {this.renderAddress}
+        </GeoAddress>
+      </dl>
+    );
+  };
   render() {
     return (
       <div>
         <h1>Geolocation</h1>
-        {this.state.error ? (
-          <div>Error: {this.state.error.message}</div>
-        ) : (
-          <dl>
-            <dt>Latitude</dt>
-            <dd>{this.state.coords.latitude || <LoadingDots />}</dd>
-            <dt>Longitude</dt>
-            <dd>{this.state.coords.longitude || <LoadingDots />}</dd>
-          </dl>
-        )}
+        <GeoPosition>{this.renderPosition}</GeoPosition>
       </div>
     );
   }
