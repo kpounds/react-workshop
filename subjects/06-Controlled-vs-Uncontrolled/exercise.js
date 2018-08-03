@@ -19,22 +19,84 @@ import React from "react";
 import ReactDOM from "react-dom";
 import serializeForm from "form-serialize";
 
+// Solution shows a better way
+
 class CheckoutForm extends React.Component {
+  state = {
+    shippingName: "",
+    shippingState: "",
+    billingName: "",
+    billingState: "",
+    readOnly: false,
+    sameAsBilling: false
+  };
+
+  handleCheckbox = e => {
+    this.setState({ sameAsBilling: e.target.checked });
+    if (e.target.checked) {
+      this.setState({
+        shippingName: this.state.billingName,
+        shippingState: this.state.billingState,
+        readOnly: true
+      });
+    } else {
+      this.setState({
+        readOnly: false
+      });
+    }
+  };
+
+  checkShippingName = e => {
+    this.setState({ billingName: e.target.value });
+    if (this.state.sameAsBilling) {
+      this.setState({
+        shippingName: e.target.value
+      });
+    }
+  };
+  checkShippingState = e => {
+    this.setState({ billingState: e.target.value });
+    if (this.state.sameAsBilling) {
+      this.setState({
+        shippingState: e.target.value
+      });
+    }
+  };
+
+  handleSubmit = e => {
+    e.preventDefault();
+    const values = serializeForm(e.target, { hash: true });
+    console.log(values);
+  };
+
   render() {
     return (
       <div>
         <h1>Checkout</h1>
-        <form>
+        <form onSubmit={this.handleSubmit}>
           <fieldset>
             <legend>Billing Address</legend>
             <p>
               <label>
-                Billing Name: <input type="text" />
+                Billing Name:{" "}
+                <input
+                  type="text"
+                  placeholder="Enter Name"
+                  onChange={this.checkShippingName}
+                  name="billingName"
+                />
               </label>
             </p>
             <p>
               <label>
-                Billing State: <input type="text" size="2" />
+                Billing State:{" "}
+                <input
+                  type="text"
+                  size="2"
+                  placeholder="SS"
+                  onChange={this.checkShippingState}
+                  name="billingState"
+                />
               </label>
             </p>
           </fieldset>
@@ -43,17 +105,49 @@ class CheckoutForm extends React.Component {
 
           <fieldset>
             <label>
-              <input type="checkbox" /> Same as billing
+              <input
+                type="checkbox"
+                name="sameAsBilling"
+                onChange={this.handleCheckbox}
+              />{" "}
+              Same as billing
             </label>
             <legend>Shipping Address</legend>
             <p>
               <label>
-                Shipping Name: <input type="text" />
+                Shipping Name:{" "}
+                <input
+                  type="text"
+                  name="shippingName"
+                  value={this.state.shippingName}
+                  onChange={event => {
+                    this.setState({
+                      shippingName: this.state.sameAsBilling
+                        ? this.state.billingName
+                        : event.target.value
+                    });
+                  }}
+                  readOnly={this.state.readOnly}
+                />
               </label>
             </p>
             <p>
               <label>
-                Shipping State: <input type="text" size="2" />
+                Shipping State:{" "}
+                <input
+                  type="text"
+                  size="2"
+                  name="shippingState"
+                  value={this.state.shippingState}
+                  onChange={event => {
+                    this.setState({
+                      shippingState: this.state.sameAsBilling
+                        ? this.state.billingState
+                        : event.target.value
+                    });
+                  }}
+                  readOnly={this.state.readOnly}
+                />
               </label>
             </p>
           </fieldset>

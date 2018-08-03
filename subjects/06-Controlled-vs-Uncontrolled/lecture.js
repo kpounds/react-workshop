@@ -2,6 +2,9 @@ import React from "react";
 import ReactDOM from "react-dom";
 import serializeForm from "form-serialize";
 
+// Adding state to the value of the input would make it controlled. But also takes away any listening to changes.
+// Add an onchange handler that sets state on change to allow UX to work and remain controlled
+
 class App extends React.Component {
   render() {
     return (
