@@ -47,6 +47,10 @@ class Modal extends React.Component {
   }
 }
 
+// 1. Code predictability - debugging
+// 2. Better encapsulation - App/Owner component doesn't know about imperative API
+// 3. Framework is able to optimize (more effecient when using cruise control example)
+
 class App extends React.Component {
   state = { isOpen: false };
 
